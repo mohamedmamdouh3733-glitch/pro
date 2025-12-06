@@ -1,15 +1,21 @@
 
+
 import React, { useState } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { Dashboard } from './components/Dashboard';
 import { Inventory } from './components/Inventory';
 import { Sales } from './components/Sales';
+import { Customers } from './components/Customers';
 import { Purchasing } from './components/Purchasing';
+import { Suppliers } from './components/Suppliers';
 import { AIInsights } from './components/AIInsights';
 import { Settings } from './components/Settings';
 import { HR } from './components/HR';
-import { ModuleType, KPI, SalesData, Product, Category, Unit, Warehouse, StockMovement, StockOperationPayload, Customer, Supplier, AppNotification, Employee, Payroll, LeaveRequest } from './types';
-import { Bell, Search, Menu, Calculator, FileSpreadsheet, Landmark, Settings as SettingsIcon, Users } from 'lucide-react';
+import { FinanceCOA } from './components/FinanceCOA';
+import { FinanceTreasury } from './components/FinanceTreasury';
+import { FinanceDashboard } from './components/FinanceDashboard';
+import { ModuleType, KPI, SalesData, Product, Category, Unit, Warehouse, StockMovement, StockOperationPayload, Customer, Supplier, AppNotification, Employee, Payroll, LeaveRequest, Account, JournalEntry, TreasuryAccount, TreasuryTransaction, Voucher, Budget, FinancialDocument, CustomerTransaction, CustomerInteraction, Invoice, SupplierTransaction, PurchaseOrder } from './types';
+import { Bell, Search, Menu, Users, Settings as SettingsIcon } from 'lucide-react';
 
 const App: React.FC = () => {
   const [currentModule, setCurrentModule] = useState<ModuleType>(ModuleType.DASHBOARD);
@@ -32,10 +38,6 @@ const App: React.FC = () => {
       isRead: false
     };
     setNotifications(prev => [newNotif, ...prev]);
-  };
-
-  const markAllAsRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
   };
 
   // Mock Data
@@ -158,15 +160,88 @@ const App: React.FC = () => {
 
   // Mock Customers
   const [customers, setCustomers] = useState<Customer[]>([
-    { id: 'C-001', name: 'شركة الأفق للتجارة', phone: '0501234567', email: 'contact@alufq.com', address: 'الرياض, العليا', balance: 5400, status: 'Active' },
-    { id: 'C-002', name: 'مؤسسة النور', phone: '0559876543', address: 'جدة, التحلية', balance: 0, status: 'Active' },
-    { id: 'C-003', name: 'خالد عبد الرحمن', phone: '0561122334', balance: 1250, status: 'Active' },
+    { id: 'C-001', name: 'شركة الأفق للتجارة', phone: '0501234567', email: 'contact@alufq.com', address: 'الرياض, العليا', balance: 5400, status: 'Active', creditLimit: 10000, category: 'VIP', taxNumber: '30001231230003' },
+    { id: 'C-002', name: 'مؤسسة النور', phone: '0559876543', address: 'جدة, التحلية', balance: 0, status: 'Active', creditLimit: 5000, category: 'Regular' },
+    { id: 'C-003', name: 'خالد عبد الرحمن', phone: '0561122334', balance: 1250, status: 'Active', category: 'New' },
+  ]);
+
+  // Mock Invoices
+  const [invoices, setInvoices] = useState<Invoice[]>([
+    { 
+       id: 'INV-001', 
+       customerId: 'C-001', 
+       customerName: 'شركة الأفق للتجارة',
+       date: '2023-10-25', 
+       dueDate: '2023-11-25', 
+       subtotal: 5000,
+       tax: 750,
+       discount: 0,
+       total: 5750, 
+       status: 'Pending', 
+       items: [
+          { id: '1', productId: 'P-1001', productName: 'سماعة بلوتوث احترافية', price: 120, quantity: 10, total: 1200 },
+          { id: '2', productId: 'P-1005', productName: 'هاتف ذكي حديث', price: 999, quantity: 2, total: 1998 }
+       ] 
+    },
+    { 
+       id: 'INV-002', 
+       customerId: 'C-002', 
+       customerName: 'مؤسسة النور',
+       date: '2023-10-20', 
+       dueDate: '2023-10-20', 
+       subtotal: 1200,
+       tax: 180,
+       discount: 0,
+       total: 1380, 
+       status: 'Paid', 
+       items: [
+          { id: '1', productId: 'P-1001', productName: 'سماعة بلوتوث احترافية', price: 120, quantity: 10, total: 1200 }
+       ] 
+    },
+  ]);
+
+  // Mock Customer Transactions (Ledger)
+  const [customerTransactions, setCustomerTransactions] = useState<CustomerTransaction[]>([
+    { id: 'TX-100', customerId: 'C-001', date: '2023-10-01', type: 'INVOICE', reference: 'INV-23-001', amount: 3000, description: 'فاتورة مبيعات #1' },
+    { id: 'TX-101', customerId: 'C-001', date: '2023-10-05', type: 'PAYMENT', reference: 'PAY-100', amount: -1000, description: 'دفعة نقدية' },
+    { id: 'TX-102', customerId: 'C-001', date: '2023-10-15', type: 'INVOICE', reference: 'INV-23-050', amount: 3400, description: 'فاتورة مبيعات #50' },
+  ]);
+
+  const [customerInteractions, setCustomerInteractions] = useState<CustomerInteraction[]>([
+    { id: 'INT-01', customerId: 'C-001', date: '2023-10-20', type: 'CALL', summary: 'متابعة سداد الفواتير المتأخرة', outcome: 'وعد بالسداد الأسبوع القادم' },
+    { id: 'INT-02', customerId: 'C-002', date: '2023-10-22', type: 'MEETING', summary: 'زيارة لفرع العميل وعرض منتجات جديدة', nextActionDate: '2023-11-01' },
   ]);
 
   // Mock Suppliers
   const [suppliers, setSuppliers] = useState<Supplier[]>([
-    { id: 'S-001', name: 'المتحدة للإلكترونيات', contactPerson: 'م. أحمد', phone: '0101010101', balance: 25000, rating: 5, status: 'Active' },
-    { id: 'S-002', name: 'مصنع الأثاث الحديث', contactPerson: 'سعيد علي', phone: '0123456789', balance: 8200, rating: 4, status: 'Active' },
+    { id: 'S-001', name: 'المتحدة للإلكترونيات', contactPerson: 'م. أحمد', phone: '0101010101', balance: 25000, rating: 5, status: 'Active', address: 'الرياض, المنطقة الصناعية', taxNumber: '30099887766001' },
+    { id: 'S-002', name: 'مصنع الأثاث الحديث', contactPerson: 'سعيد علي', phone: '0123456789', balance: 8200, rating: 4, status: 'Active', address: 'الدمام' },
+  ]);
+
+  const [supplierTransactions, setSupplierTransactions] = useState<SupplierTransaction[]>([
+    { id: 'STX-01', supplierId: 'S-001', date: '2023-10-01', type: 'INVOICE', reference: 'PINV-901', amount: 30000, description: 'شراء بضاعة (إلكترونيات)' },
+    { id: 'STX-02', supplierId: 'S-001', date: '2023-10-10', type: 'PAYMENT', reference: 'PV-502', amount: -5000, description: 'دفعة تحت الحساب' },
+  ]);
+
+  // Mock Purchase Orders
+  const [purchaseOrders, setPurchaseOrders] = useState<PurchaseOrder[]>([
+    {
+      id: 'PO-2023-001',
+      supplierId: 'S-001',
+      supplierName: 'المتحدة للإلكترونيات',
+      date: '2023-10-01',
+      dueDate: '2023-10-15',
+      status: 'Received',
+      subtotal: 5000,
+      tax: 750,
+      discount: 0,
+      total: 5750,
+      paymentType: 'CREDIT',
+      items: [
+         { id: '1', productId: 'P-1001', productName: 'سماعة بلوتوث احترافية', quantity: 50, cost: 80, total: 4000 },
+         { id: '2', productId: 'P-1003', productName: 'شاشة 4K', quantity: 2, cost: 500, total: 1000 }
+      ]
+    }
   ]);
 
   // Mock HR Data
@@ -187,7 +262,140 @@ const App: React.FC = () => {
     { id: 'LV-002', employeeId: 'EMP-001', type: 'Sick', startDate: '2023-10-10', endDate: '2023-10-12', status: 'Approved', reason: 'ظرف صحي' },
   ]);
 
+  // Mock COA Data
+  const [accounts, setAccounts] = useState<Account[]>([
+    { id: 'ACC-101', code: '101', name: 'النقدية في الخزينة', type: 'ASSET', balance: 50000, isHeader: false, level: 1 },
+    { id: 'ACC-102', code: '102', name: 'البنك الأهلي', type: 'ASSET', balance: 125000, isHeader: false, level: 1 },
+    { id: 'ACC-103', code: '103', name: 'العملاء', type: 'ASSET', balance: 45000, isHeader: false, level: 1 },
+    { id: 'ACC-104', code: '104', name: 'المخزون', type: 'ASSET', balance: 89000, isHeader: false, level: 1 },
+    { id: 'ACC-201', code: '201', name: 'الموردين', type: 'LIABILITY', balance: 32000, isHeader: false, level: 1 },
+    { id: 'ACC-202', code: '202', name: 'قروض قصيرة الأجل', type: 'LIABILITY', balance: 15000, isHeader: false, level: 1 },
+    { id: 'ACC-301', code: '301', name: 'رأس المال', type: 'EQUITY', balance: 250000, isHeader: false, level: 1 },
+    { id: 'ACC-401', code: '401', name: 'إيرادات المبيعات', type: 'REVENUE', balance: 180000, isHeader: false, level: 1 },
+    { id: 'ACC-501', code: '501', name: 'تكلفة البضاعة المباعة', type: 'EXPENSE', balance: 95000, isHeader: false, level: 1 },
+    { id: 'ACC-502', code: '502', name: 'مصروفات الرواتب', type: 'EXPENSE', balance: 45000, isHeader: false, level: 1 },
+    { id: 'ACC-503', code: '503', name: 'مصروفات الكهرباء والمياه', type: 'EXPENSE', balance: 3500, isHeader: false, level: 1 },
+  ]);
+
+  // Mock Journal Entries
+  const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([
+     {
+        id: 'JE-001',
+        date: '2023-10-01',
+        reference: 'REF-001',
+        description: 'رأس المال الافتتاحي',
+        status: 'Posted',
+        createdAt: '2023-10-01',
+        lines: [
+           { id: 'L1', accountId: 'ACC-102', debit: 250000, credit: 0 },
+           { id: 'L2', accountId: 'ACC-301', debit: 0, credit: 250000 }
+        ]
+     },
+     {
+        id: 'JE-002',
+        date: '2023-10-05',
+        reference: 'INV-100',
+        description: 'مبيعات نقدية',
+        status: 'Posted',
+        createdAt: '2023-10-05',
+        lines: [
+           { id: 'L3', accountId: 'ACC-101', debit: 5000, credit: 0 },
+           { id: 'L4', accountId: 'ACC-401', debit: 0, credit: 5000 }
+        ]
+     }
+  ]);
+
+  // Financial Documents History
+  const [financialDocuments, setFinancialDocuments] = useState<FinancialDocument[]>([
+    { id: 'DOC-101', type: 'PAYMENT_VOUCHER', date: '2023-10-20', reference: 'VCH-1001', description: 'سداد دفعة للمورد', amount: 5000, status: 'Posted', beneficiary: 'المتحدة للإلكترونيات' },
+    { id: 'DOC-102', type: 'RECEIPT_VOUCHER', date: '2023-10-22', reference: 'VCH-1002', description: 'تحصيل من عميل', amount: 2500, status: 'Posted', beneficiary: 'شركة الأفق' }
+  ]);
+
+  // Mock Treasury Data
+  const [treasuryAccounts, setTreasuryAccounts] = useState<TreasuryAccount[]>([
+    { id: 'TR-01', name: 'الخزينة الرئيسية', type: 'CASH', balance: 50000, currency: 'SAR' },
+    { id: 'TR-02', name: 'البنك الأهلي', type: 'BANK', balance: 125000, currency: 'SAR', accountNumber: 'SA000000123456789' },
+  ]);
+  
+  const [treasuryTransactions, setTreasuryTransactions] = useState<TreasuryTransaction[]>([
+    { id: 'TX-01', date: '2023-10-01', type: 'INCOME', amount: 5000, accountId: 'TR-01', description: 'مبيعات نقدية', category: 'Sales' },
+    { id: 'TX-02', date: '2023-10-02', type: 'EXPENSE', amount: 200, accountId: 'TR-01', description: 'ضيافة', category: 'General' },
+  ]);
+
+  // Mock Budgets
+  const [budgets, setBudgets] = useState<Budget[]>([
+    { id: 'B-01', category: 'مصروفات الرواتب', allocated: 50000, spent: 45000, period: 'Oct 2023' },
+    { id: 'B-02', category: 'تسويق', allocated: 15000, spent: 8000, period: 'Oct 2023' },
+    { id: 'B-03', category: 'مرافق وكهرباء', allocated: 5000, spent: 3500, period: 'Oct 2023' },
+  ]);
+
   // --- Handlers for Interactivity ---
+
+  // Customer Handlers
+  const handleAddCustomer = (c: Customer) => {
+    setCustomers([...customers, c]);
+    addNotification('عميل جديد', `تم إضافة العميل ${c.name} بنجاح`, 'success');
+  };
+
+  const handleUpdateCustomer = (c: Customer) => {
+    setCustomers(customers.map(cust => cust.id === c.id ? c : cust));
+    addNotification('تحديث بيانات', `تم تحديث بيانات العميل ${c.name}`, 'info');
+  };
+
+  const handleDeleteCustomer = (id: string) => {
+    const cust = customers.find(c => c.id === id);
+    setCustomers(customers.filter(c => c.id !== id));
+    addNotification('حذف عميل', `تم حذف العميل ${cust?.name} نهائياً`, 'warning');
+  };
+
+  // Supplier Handlers
+  const handleAddSupplier = (s: Supplier) => {
+    setSuppliers([...suppliers, s]);
+    addNotification('مورد جديد', `تم إضافة المورد ${s.name} بنجاح`, 'success');
+  };
+
+  const handleUpdateSupplier = (s: Supplier) => {
+    setSuppliers(suppliers.map(supp => supp.id === s.id ? s : supp));
+    addNotification('تحديث مورد', `تم تحديث بيانات المورد ${s.name}`, 'info');
+  };
+
+  const handleDeleteSupplier = (id: string) => {
+    const supp = suppliers.find(s => s.id === id);
+    setSuppliers(suppliers.filter(s => s.id !== id));
+    addNotification('حذف مورد', `تم حذف المورد ${supp?.name}`, 'warning');
+  };
+
+  // Invoice Handlers
+  const handleAddInvoice = (inv: Invoice) => {
+     setInvoices([...invoices, inv]);
+     addNotification('فاتورة جديدة', `تم إصدار فاتورة مبيعات جديدة للعميل ${inv.customerName}`, 'success');
+  };
+
+  const handleUpdateInvoice = (inv: Invoice) => {
+     setInvoices(invoices.map(i => i.id === inv.id ? inv : i));
+  };
+
+  const handleDeleteInvoice = (id: string) => {
+     setInvoices(invoices.filter(i => i.id !== id));
+     addNotification('حذف فاتورة', 'تم حذف الفاتورة بنجاح.', 'warning');
+  };
+
+  // Purchase Order Handlers
+  const handleAddPurchaseOrder = (order: PurchaseOrder) => {
+    setPurchaseOrders([...purchaseOrders, order]);
+    addNotification('أمر شراء', `تم إنشاء أمر شراء جديد للمورد ${order.supplierName}`, 'success');
+  };
+
+  const handleUpdatePurchaseOrder = (order: PurchaseOrder) => {
+    setPurchaseOrders(purchaseOrders.map(po => po.id === order.id ? order : po));
+    addNotification('تحديث أمر شراء', `تم تحديث أمر الشراء ${order.id}`, 'info');
+  };
+
+  const handleDeletePurchaseOrder = (id: string) => {
+    setPurchaseOrders(purchaseOrders.filter(po => po.id !== id));
+    addNotification('حذف أمر شراء', 'تم حذف أمر الشراء بنجاح.', 'warning');
+  };
+
 
   const handleAddProduct = (newProduct: Product) => {
     setProducts([...products, newProduct]);
@@ -261,10 +469,195 @@ const App: React.FC = () => {
        );
     }
     
-    // Notification for the operation itself
     if (payload.type === 'TRANSFER') {
       addNotification('تحويل مخزني', `تم تحويل ${Math.abs(quantityChange)} من "${product.name}".`, 'info');
     }
+  };
+
+  // --- Finance Handlers ---
+  const handleAddAccount = (account: Account) => {
+     setAccounts([...accounts, account]);
+     addNotification('حساب جديد', `تم إضافة الحساب "${account.name}" بنجاح.`, 'success');
+  };
+
+  const handleUpdateAccount = (account: Account) => {
+     setAccounts(accounts.map(a => a.id === account.id ? account : a));
+     addNotification('تعديل حساب', `تم تحديث بيانات الحساب "${account.name}".`, 'info');
+  };
+
+  const handleDeleteAccount = (id: string) => {
+     const acc = accounts.find(a => a.id === id);
+     const hasHistory = journalEntries.some(je => je.lines.some(l => l.accountId === id));
+     if(hasHistory) {
+        addNotification('خطأ حذف', `لا يمكن حذف الحساب "${acc?.name}" لأنه يحتوي على حركات مالية مسجلة.`, 'error');
+        return;
+     }
+
+     setAccounts(accounts.filter(a => a.id !== id));
+     addNotification('حذف حساب', `تم حذف الحساب "${acc?.name}".`, 'warning');
+  };
+
+  const handleAddJournalEntry = (entry: JournalEntry) => {
+      setJournalEntries([entry, ...journalEntries]);
+      const newAccounts = [...accounts];
+      
+      entry.lines.forEach(line => {
+         const accIndex = newAccounts.findIndex(a => a.id === line.accountId);
+         if(accIndex >= 0) {
+            const acc = newAccounts[accIndex];
+            let change = 0;
+            if (['ASSET', 'EXPENSE'].includes(acc.type)) {
+               change = line.debit - line.credit;
+            } else {
+               change = line.credit - line.debit;
+            }
+            newAccounts[accIndex] = { ...acc, balance: acc.balance + change };
+         }
+      });
+      
+      setAccounts(newAccounts);
+      addNotification('قيد يومية', `تم ترحيل القيد رقم ${entry.reference} بنجاح.`, 'success');
+  };
+
+  const handleVoucherOperation = (voucher: Voucher) => {
+    let debitLine, creditLine;
+    let descriptionPrefix = '';
+    let docType: 'PAYMENT_VOUCHER' | 'RECEIPT_VOUCHER' = 'PAYMENT_VOUCHER';
+
+    if (voucher.type === 'PAYMENT') {
+       creditLine = { id: 'L1', accountId: voucher.accountId, debit: 0, credit: voucher.amount };
+       debitLine = { id: 'L2', accountId: voucher.targetAccountId, debit: voucher.amount, credit: 0 };
+       descriptionPrefix = 'سند صرف: ';
+       docType = 'PAYMENT_VOUCHER';
+    } else {
+       debitLine = { id: 'L1', accountId: voucher.accountId, debit: voucher.amount, credit: 0 };
+       creditLine = { id: 'L2', accountId: voucher.targetAccountId, debit: 0, credit: voucher.amount };
+       descriptionPrefix = 'سند قبض: ';
+       docType = 'RECEIPT_VOUCHER';
+    }
+
+    const reference = voucher.reference || `VCH-${Math.floor(Math.random() * 10000)}`;
+
+    const entry: JournalEntry = {
+       id: `JE-${Date.now()}`,
+       date: voucher.date,
+       reference: reference,
+       description: `${descriptionPrefix}${voucher.description}`,
+       status: 'Posted',
+       createdAt: new Date().toISOString(),
+       lines: [debitLine, creditLine]
+    };
+
+    const doc: FinancialDocument = {
+       id: `DOC-${Date.now()}`,
+       type: docType,
+       date: voucher.date,
+       reference: reference,
+       description: voucher.description,
+       amount: voucher.amount,
+       status: 'Posted',
+       beneficiary: 'عام'
+    };
+
+    setFinancialDocuments([doc, ...financialDocuments]);
+    handleAddJournalEntry(entry);
+    addNotification('عملية مالية', `تم تسجيل ${descriptionPrefix} بقيمة ${voucher.amount}`, 'success');
+  };
+
+  const handlePettyCashSettlement = (totalAmount: number, expenses: { accountId: string, amount: number }[]) => {
+     const cashAccount = accounts.find(a => a.name.includes('النقدية')) || accounts[0];
+     
+     const creditLine = { id: 'L-Credit', accountId: cashAccount.id, debit: 0, credit: totalAmount };
+     const debitLines = expenses.map((exp, idx) => ({
+        id: `L-Debit-${idx}`,
+        accountId: exp.accountId,
+        debit: exp.amount,
+        credit: 0
+     }));
+     
+     const reference = `PC-${Math.floor(Math.random() * 1000)}`;
+
+     const entry: JournalEntry = {
+        id: `JE-PC-${Date.now()}`,
+        date: new Date().toISOString().split('T')[0],
+        reference: reference,
+        description: 'تسوية عهدة / مصروفات نقدية',
+        status: 'Posted',
+        createdAt: new Date().toISOString(),
+        lines: [creditLine, ...debitLines]
+     };
+
+     const doc: FinancialDocument = {
+        id: `DOC-PC-${Date.now()}`,
+        type: 'PETTY_CASH',
+        date: new Date().toISOString().split('T')[0],
+        reference: reference,
+        description: 'تسوية عهدة مصروفات',
+        amount: totalAmount,
+        status: 'Posted',
+        details: expenses
+     };
+
+     setFinancialDocuments([doc, ...financialDocuments]);
+     handleAddJournalEntry(entry);
+     addNotification('تسوية عهدة', `تم تسوية مصروفات بقيمة ${totalAmount}`, 'success');
+  };
+
+  const handleDeleteDocument = (id: string) => {
+     setFinancialDocuments(financialDocuments.filter(d => d.id !== id));
+     addNotification('حذف مستند', 'تم حذف المستند المالي بنجاح (تنبيه: يجب مراجعة القيود يدوياً)', 'warning');
+  };
+
+  // --- Treasury Handlers ---
+  const handleAddTreasuryAccount = (acc: TreasuryAccount) => {
+    setTreasuryAccounts([...treasuryAccounts, acc]);
+    addNotification('خزينة/بنك جديد', `تم إضافة الحساب "${acc.name}" بنجاح.`, 'success');
+  };
+
+  const handleUpdateTreasuryAccount = (acc: TreasuryAccount) => {
+    setTreasuryAccounts(treasuryAccounts.map(a => a.id === acc.id ? acc : a));
+    addNotification('تحديث حساب', `تم تعديل بيانات الحساب "${acc.name}".`, 'info');
+  };
+
+  const handleDeleteTreasuryAccount = (id: string) => {
+    const acc = treasuryAccounts.find(a => a.id === id);
+    setTreasuryAccounts(treasuryAccounts.filter(a => a.id !== id));
+    addNotification('حذف حساب', `تم حذف حساب "${acc?.name}".`, 'warning');
+  };
+
+  const handleTreasuryTransaction = (payload: { type: 'INCOME'|'EXPENSE'|'TRANSFER', amount: number, accountId: string, targetAccountId?: string, description: string, category: string }) => {
+     const updatedAccounts = [...treasuryAccounts];
+     const sourceIdx = updatedAccounts.findIndex(a => a.id === payload.accountId);
+     
+     if(sourceIdx === -1) return;
+
+     if(payload.type === 'INCOME') {
+        updatedAccounts[sourceIdx].balance += payload.amount;
+     } else if(payload.type === 'EXPENSE') {
+        updatedAccounts[sourceIdx].balance -= payload.amount;
+     } else if(payload.type === 'TRANSFER' && payload.targetAccountId) {
+        const targetIdx = updatedAccounts.findIndex(a => a.id === payload.targetAccountId);
+        if(targetIdx !== -1) {
+           updatedAccounts[sourceIdx].balance -= payload.amount;
+           updatedAccounts[targetIdx].balance += payload.amount;
+        }
+     }
+     setTreasuryAccounts(updatedAccounts);
+
+     const newTx: TreasuryTransaction = {
+        id: `TX-${Date.now()}`,
+        date: new Date().toISOString().split('T')[0],
+        type: payload.type,
+        amount: payload.amount,
+        accountId: payload.accountId,
+        targetAccountId: payload.targetAccountId,
+        description: payload.description,
+        category: payload.category
+     };
+     setTreasuryTransactions([newTx, ...treasuryTransactions]);
+     
+     const msg = payload.type === 'TRANSFER' ? 'تحويل أموال' : payload.type === 'INCOME' ? 'عملية إيداع' : 'عملية صرف';
+     addNotification(msg, `تم تنفيذ العملية بقيمة ${payload.amount} بنجاح.`, 'success');
   };
 
   const renderContent = () => {
@@ -288,14 +681,41 @@ const App: React.FC = () => {
       
       // Commercial Modules - Separated
       case ModuleType.CUSTOMERS:
-        return <Sales customers={customers} invoices={[]} mode="customers" />;
+        return <Customers 
+                 customers={customers} 
+                 transactions={customerTransactions}
+                 interactions={customerInteractions}
+                 onAddCustomer={handleAddCustomer}
+                 onUpdateCustomer={handleUpdateCustomer}
+                 onDeleteCustomer={handleDeleteCustomer}
+               />;
       case ModuleType.SALES:
-        return <Sales customers={[]} invoices={[]} mode="invoices" />;
+        return <Sales 
+                  customers={customers} 
+                  invoices={invoices} 
+                  products={products}
+                  onAddInvoice={handleAddInvoice}
+                  onUpdateInvoice={handleUpdateInvoice}
+                  onDeleteInvoice={handleDeleteInvoice}
+               />;
       
       case ModuleType.SUPPLIERS:
-        return <Purchasing suppliers={suppliers} orders={[]} mode="suppliers" />;
+        return <Suppliers 
+                 suppliers={suppliers} 
+                 transactions={supplierTransactions}
+                 onAddSupplier={handleAddSupplier}
+                 onUpdateSupplier={handleUpdateSupplier}
+                 onDeleteSupplier={handleDeleteSupplier}
+               />;
       case ModuleType.PURCHASING:
-        return <Purchasing suppliers={[]} orders={[]} mode="orders" />;
+        return <Purchasing 
+                  suppliers={suppliers} 
+                  orders={purchaseOrders} 
+                  products={products}
+                  onAddOrder={handleAddPurchaseOrder}
+                  onUpdateOrder={handleUpdatePurchaseOrder}
+                  onDeleteOrder={handleDeletePurchaseOrder}
+               />;
         
       case ModuleType.AI_INSIGHTS:
         return <AIInsights kpis={kpis} salesData={salesData} />;
@@ -306,31 +726,37 @@ const App: React.FC = () => {
       case ModuleType.HR:
         return <HR employees={employees} payrolls={payrolls} leaves={leaves} />;
       
-      // Finance Placeholders
-      case ModuleType.FINANCE_DASHBOARD:
-        return (
-          <div className="flex flex-col items-center justify-center h-full text-center space-y-4 animate-fade-in">
-             <div className="bg-emerald-100 p-6 rounded-full"><Calculator className="w-12 h-12 text-emerald-600" /></div>
-             <h2 className="text-2xl font-bold text-slate-800">المالية العامة</h2>
-             <p className="text-slate-500">شاشة التقارير المالية والقيود اليومية (قيد التطوير).</p>
-          </div>
-        );
       case ModuleType.FINANCE_COA:
-        return (
-          <div className="flex flex-col items-center justify-center h-full text-center space-y-4 animate-fade-in">
-             <div className="bg-blue-100 p-6 rounded-full"><FileSpreadsheet className="w-12 h-12 text-blue-600" /></div>
-             <h2 className="text-2xl font-bold text-slate-800">شجرة الحسابات</h2>
-             <p className="text-slate-500">دليل الحسابات والأرصدة الافتتاحية (قيد التطوير).</p>
-          </div>
-        );
+        return <FinanceCOA 
+                  accounts={accounts} 
+                  journalEntries={journalEntries}
+                  onAddAccount={handleAddAccount}
+                  onUpdateAccount={handleUpdateAccount}
+                  onDeleteAccount={handleDeleteAccount}
+                  onAddJournalEntry={handleAddJournalEntry}
+               />;
+
       case ModuleType.FINANCE_TREASURY:
-        return (
-          <div className="flex flex-col items-center justify-center h-full text-center space-y-4 animate-fade-in">
-             <div className="bg-amber-100 p-6 rounded-full"><Landmark className="w-12 h-12 text-amber-600" /></div>
-             <h2 className="text-2xl font-bold text-slate-800">الخزنة والبنوك</h2>
-             <p className="text-slate-500">إدارة النقدية والشيكات والبنوك (قيد التطوير).</p>
-          </div>
-        );
+        return <FinanceTreasury 
+                  accounts={treasuryAccounts} 
+                  transactions={treasuryTransactions} 
+                  onAddAccount={handleAddTreasuryAccount}
+                  onUpdateAccount={handleUpdateTreasuryAccount}
+                  onDeleteAccount={handleDeleteTreasuryAccount}
+                  onTransaction={handleTreasuryTransaction}
+               />;
+        
+      case ModuleType.FINANCE_DASHBOARD:
+        return <FinanceDashboard 
+                 accounts={accounts} 
+                 treasuryAccounts={treasuryAccounts} 
+                 budgets={budgets}
+                 financialDocuments={financialDocuments}
+                 onVoucherCreate={handleVoucherOperation}
+                 onPettyCashSettle={handlePettyCashSettlement}
+                 onDeleteDocument={handleDeleteDocument}
+                 onNewJournalRequest={() => setCurrentModule(ModuleType.FINANCE_COA)} 
+               />;
 
       default:
         return <div className="p-10 text-center text-slate-500">جاري العمل على هذه الوحدة...</div>;

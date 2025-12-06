@@ -1,4 +1,5 @@
 
+
 export enum ModuleType {
   DASHBOARD = 'DASHBOARD',
   INVENTORY = 'INVENTORY',
@@ -142,6 +143,26 @@ export interface SalesData {
 }
 
 // --- Sales & CRM Types ---
+export interface CustomerInteraction {
+  id: string;
+  customerId: string;
+  date: string;
+  type: 'CALL' | 'MEETING' | 'EMAIL' | 'NOTE';
+  summary: string;
+  outcome?: string;
+  nextActionDate?: string;
+}
+
+export interface CustomerTransaction {
+  id: string;
+  customerId: string;
+  date: string;
+  type: 'INVOICE' | 'PAYMENT' | 'RETURN';
+  reference: string;
+  amount: number; // Positive for Invoice, Negative for Payment
+  description: string;
+}
+
 export interface Customer {
   id: string;
   name: string;
@@ -149,18 +170,44 @@ export interface Customer {
   email?: string;
   address?: string;
   balance: number; // Positive means they owe us
+  creditLimit?: number;
+  taxNumber?: string;
   status: 'Active' | 'Inactive';
   lastOrderDate?: string;
+  category?: 'VIP' | 'Regular' | 'New';
+}
+
+export interface InvoiceItem {
+  id: string;
+  productId: string;
+  productName: string;
+  unit?: string;
+  quantity: number;
+  price: number;
+  total: number;
 }
 
 export interface Invoice {
   id: string;
   customerId: string;
+  customerName: string; // Denormalized for display
   date: string;
   dueDate: string;
+  subtotal: number;
+  tax: number;
+  discount: number;
   total: number;
   status: 'Paid' | 'Pending' | 'Overdue';
-  itemsCount: number;
+  items: InvoiceItem[];
+  notes?: string;
+  
+  // Advanced ERP Fields
+  paymentType?: 'CASH' | 'CREDIT';
+  withholdingTaxRate?: number; // e.g., 0, 1, 3
+  withholdingTaxAmount?: number;
+  additionalDiscount?: number;
+  additionalDiscountType?: 'PERCENTAGE' | 'FIXED';
+  amountInWords?: string;
 }
 
 // --- Purchasing & SRM Types ---
@@ -173,13 +220,130 @@ export interface Supplier {
   balance: number; // Positive means we owe them
   rating: number; // 1-5 stars
   status: 'Active' | 'Blocked';
+  address?: string;
+  taxNumber?: string;
+}
+
+export interface SupplierTransaction {
+  id: string;
+  supplierId: string;
+  date: string;
+  type: 'INVOICE' | 'PAYMENT' | 'RETURN';
+  reference: string;
+  amount: number; // Positive = We owe them (Invoice), Negative = We paid (Payment)
+  description: string;
+}
+
+export interface PurchaseItem {
+  id: string;
+  productId: string;
+  productName: string;
+  unit?: string;
+  quantity: number;
+  cost: number;
+  total: number;
 }
 
 export interface PurchaseOrder {
   id: string;
   supplierId: string;
+  supplierName: string;
   date: string;
-  expectedDelivery: string;
+  dueDate: string;
+  expectedDelivery?: string;
+  subtotal: number;
+  tax: number;
+  discount: number;
   total: number;
   status: 'Draft' | 'Sent' | 'Received' | 'Cancelled';
+  items: PurchaseItem[];
+  notes?: string;
+  paymentType?: 'CASH' | 'CREDIT';
+  additionalDiscount?: number;
+  additionalDiscountType?: 'PERCENTAGE' | 'FIXED';
+  amountInWords?: string;
+}
+
+// --- Finance Types ---
+export type AccountType = 'ASSET' | 'LIABILITY' | 'EQUITY' | 'REVENUE' | 'EXPENSE';
+
+export interface Account {
+  id: string;
+  code: string;
+  name: string;
+  type: AccountType;
+  balance: number;
+  parentAccount?: string;
+  isHeader: boolean;
+  level: number;
+}
+
+export interface JournalEntryLine {
+  id: string;
+  accountId: string;
+  debit: number;
+  credit: number;
+  description?: string;
+}
+
+export interface JournalEntry {
+  id: string;
+  date: string;
+  reference: string;
+  description: string;
+  lines: JournalEntryLine[];
+  status: 'Posted' | 'Draft';
+  createdAt: string;
+}
+
+export interface TreasuryAccount {
+  id: string;
+  name: string;
+  type: 'CASH' | 'BANK';
+  balance: number;
+  currency: string;
+  accountNumber?: string;
+}
+
+export interface TreasuryTransaction {
+  id: string;
+  date: string;
+  type: 'INCOME' | 'EXPENSE' | 'TRANSFER';
+  amount: number;
+  accountId: string;
+  targetAccountId?: string; // For transfers
+  description: string;
+  category: string;
+}
+
+export interface Voucher {
+  id: string;
+  type: 'PAYMENT' | 'RECEIPT';
+  date: string;
+  amount: number;
+  accountId: string; // Bank/Cash Account
+  targetAccountId: string; // Expense/Revenue/Party Account
+  description: string;
+  payee?: string;
+  reference?: string; // Optional reference number
+}
+
+export interface FinancialDocument {
+  id: string;
+  type: 'PAYMENT_VOUCHER' | 'RECEIPT_VOUCHER' | 'PETTY_CASH';
+  date: string;
+  reference: string;
+  description: string;
+  amount: number;
+  status: 'Posted' | 'Void';
+  beneficiary?: string; // Payee or Payer
+  details?: any; // For petty cash lines or extra info
+}
+
+export interface Budget {
+  id: string;
+  category: string;
+  allocated: number;
+  spent: number;
+  period: string;
 }

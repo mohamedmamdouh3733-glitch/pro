@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { ModuleType } from '../types';
 import { LayoutDashboard, Package, Users, DollarSign, BrainCircuit, Box, LogOut, FileSpreadsheet, Landmark, ShoppingBag, Truck, Receipt, UserCheck, ShoppingCart, Settings, Briefcase } from 'lucide-react';
@@ -33,11 +32,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentModule, onModuleChange 
     { id: ModuleType.SETTINGS, label: 'الإعدادات', icon: Settings },
   ];
 
-  const NavItem = ({ item }: { item: any }) => {
+  const renderNavItem = (item: any) => {
     const Icon = item.icon;
     const isActive = currentModule === item.id;
     return (
       <button
+        key={item.id}
         onClick={() => onModuleChange(item.id)}
         className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
           isActive 
@@ -65,25 +65,25 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentModule, onModuleChange 
           {/* Main Section */}
           <div className="space-y-1">
              <div className="px-4 mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">الرئيسية</div>
-             {mainItems.map(item => <NavItem key={item.id} item={item} />)}
+             {mainItems.map(item => renderNavItem(item))}
           </div>
 
           {/* Commercial Section */}
           <div className="space-y-1 pt-2 border-t border-slate-100">
              <div className="px-4 mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">العمليات التجارية</div>
-             {commercialItems.map(item => <NavItem key={item.id} item={item} />)}
+             {commercialItems.map(item => renderNavItem(item))}
           </div>
 
           {/* Finance Section */}
           <div className="space-y-1 pt-2 border-t border-slate-100">
              <div className="px-4 mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">الإدارة المالية</div>
-             {financeItems.map(item => <NavItem key={item.id} item={item} />)}
+             {financeItems.map(item => renderNavItem(item))}
           </div>
 
           {/* HR & Admin Section */}
           <div className="space-y-1 pt-2 border-t border-slate-100">
              <div className="px-4 mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">الموارد البشرية والإدارة</div>
-             {adminItems.map(item => <NavItem key={item.id} item={item} />)}
+             {adminItems.map(item => renderNavItem(item))}
           </div>
           
           {/* AI Section */}
