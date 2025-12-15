@@ -1,7 +1,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { Customer, Invoice, Product } from '../types';
-import { Search, Plus, Printer, Trash2, Pencil, X, Save, Barcode, QrCode, Building2, Phone, Mail } from 'lucide-react';
+import { Search, Plus, Printer, Trash2, Pencil, X, Save, Scan, QrCode, Building2, Phone, Mail } from 'lucide-react';
 
 interface SalesProps {
   customers: Customer[];
@@ -406,7 +406,7 @@ export const Sales: React.FC<SalesProps> = ({
                     <div>
                        <h4 className="font-bold text-slate-800 text-sm mb-3 border-b pb-2">أدوات مساعدة</h4>
                        <button onClick={addLine} className="w-full flex items-center gap-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 p-2 rounded transition-colors text-xs font-bold mb-2"><Plus className="w-4 h-4" /> إضافة صنف جديد</button>
-                       <button className="w-full flex items-center gap-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 p-2 rounded transition-colors text-xs font-bold mb-2"><Barcode className="w-4 h-4" /> طباعة باركود</button>
+                       <button className="w-full flex items-center gap-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 p-2 rounded transition-colors text-xs font-bold mb-2"><Scan className="w-4 h-4" /> طباعة باركود</button>
                     </div>
                 </div>
             </div>

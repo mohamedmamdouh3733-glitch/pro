@@ -1,7 +1,7 @@
 
-
 export enum ModuleType {
   DASHBOARD = 'DASHBOARD',
+  REPORTS = 'REPORTS',             // موديول التقارير الجديد
   INVENTORY = 'INVENTORY',
   HR = 'HR',
   // Commercial Modules
@@ -346,4 +346,15 @@ export interface Budget {
   allocated: number;
   spent: number;
   period: string;
+}
+
+// --- System Users & Security ---
+export interface SystemUser {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  status: 'Active' | 'Inactive';
+  pin: string; // Login PIN
+  permissions: ModuleType[]; // Allowed Modules
 }

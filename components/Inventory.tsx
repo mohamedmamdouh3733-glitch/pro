@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Product, Category, Unit, Warehouse, StockMovement, StockOperationPayload } from '../types';
-import { Search, Filter, Plus, MoreVertical, ScanBarcode, Scale, Package, DollarSign, Calendar, Save, X, AlertCircle, FileText, Tag, ChevronDown, Layers, Ruler, ArrowRightLeft, History, ClipboardCheck, ArrowUpRight, ArrowDownLeft, Eye, Pencil, Trash2, ArrowRight, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { Search, Filter, Plus, MoreVertical, Scan, Scale, Package, DollarSign, Calendar, Save, X, AlertCircle, FileText, Tag, ChevronDown, Layers, Ruler, ArrowRightLeft, History, ClipboardCheck, ArrowUpRight, ArrowDownLeft, Eye, Pencil, Trash2, ArrowRight, CheckCircle2, AlertTriangle } from 'lucide-react';
 
 interface InventoryProps {
   products: Product[];
@@ -220,7 +220,7 @@ export const Inventory: React.FC<InventoryProps> = ({
                </button>
             </h2>
             <div className="flex items-center gap-3 text-slate-500 text-sm mt-1">
-               <span className="flex items-center gap-1"><ScanBarcode className="w-4 h-4"/> {selectedProduct.barcode}</span>
+               <span className="flex items-center gap-1"><Scan className="w-4 h-4"/> {selectedProduct.barcode}</span>
                <span className="w-1 h-1 bg-slate-300 rounded-full"></span>
                <span>{selectedProduct.category}</span>
             </div>
@@ -525,7 +525,7 @@ export const Inventory: React.FC<InventoryProps> = ({
                               <span className="bg-slate-100 px-1.5 py-0.5 rounded text-slate-600 font-mono">{product.id}</span>
                               {product.barcode && (
                                 <span className="flex items-center gap-1 text-slate-400">
-                                  <ScanBarcode className="w-3 h-3"/> 
+                                  <Scan className="w-3 h-3"/> 
                                   {product.barcode}
                                 </span>
                               )}
@@ -804,7 +804,7 @@ export const Inventory: React.FC<InventoryProps> = ({
                      <div className="col-span-2 md:col-span-1">
                         <label className="block text-sm font-bold text-slate-700 mb-2">الباركود / SKU</label>
                         <div className="relative group/input">
-                          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within/input:text-blue-500 transition-colors"><ScanBarcode className="w-5 h-5" /></div>
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within/input:text-blue-500 transition-colors"><Scan className="w-5 h-5" /></div>
                           <input 
                             type="text" 
                             value={productForm.barcode}

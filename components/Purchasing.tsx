@@ -1,8 +1,7 @@
 
-
 import React, { useState, useMemo } from 'react';
 import { Supplier, PurchaseOrder, Product } from '../types';
-import { Search, Plus, Printer, Trash2, Pencil, X, Save, Barcode, QrCode, Building2, Phone, Mail, ShoppingCart, Truck } from 'lucide-react';
+import { Search, Plus, Printer, Trash2, Pencil, X, Save, Scan, QrCode, Building2, Phone, Mail, ShoppingCart, Truck } from 'lucide-react';
 
 interface PurchasingProps {
   suppliers: Supplier[];

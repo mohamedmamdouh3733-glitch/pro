@@ -1,13 +1,17 @@
+
 import { GoogleGenAI } from "@google/genai";
 import { KPI, SalesData } from '../types';
-
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 export const getBusinessInsights = async (
   kpis: KPI[],
   salesData: SalesData[]
 ): Promise<string> => {
   try {
+    // تهيئة العميل هنا بدلاً من النطاق العام لتجنب أخطاء التشغيل المباشرة
+    // Initialize inside the function to prevent app crash on load if env is missing
+    const apiKey = process.env.API_KEY || ''; 
+    const ai = new GoogleGenAI({ apiKey: apiKey });
+
     const kpiSummary = kpis.map(k => `${k.title}: ${k.value} (${k.change > 0 ? '+' : ''}${k.change}%)`).join(', ');
     const salesSummary = salesData.map(s => `${s.name}: Revenue ${s.revenue}, Profit ${s.profit}`).join('; ');
 
@@ -30,6 +34,6 @@ export const getBusinessInsights = async (
     return response.text || "لم يتم العثور على رؤى متاحة حالياً.";
   } catch (error) {
     console.error("Gemini Error:", error);
-    return "نعتذر، خدمة الذكاء الاصطناعي غير متاحة مؤقتاً.";
+    return "نعتذر، خدمة الذكاء الاصطناعي غير متاحة حالياً أو مفتاح API غير صحيح.";
   }
 };
